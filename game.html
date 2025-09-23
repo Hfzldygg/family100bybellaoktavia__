@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ronde Kuis - Family 100 Islami</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Fredoka+One&family=Paytone+One&display=swap");
+
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100vh;
+        font-family: "Paytone One", sans-serif;
+        background-color: #0077cc;
+        background-image: radial-gradient(
+            circle at 15% 25%,
+            rgba(255, 255, 255, 0.3),
+            transparent 40%
+          ),
+          radial-gradient(
+            circle at 85% 35%,
+            rgba(255, 255, 255, 0.25),
+            transparent 50%
+          );
+        color: white;
+        overflow: hidden;
+        user-select: none;
+      }
+
+      .game-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        box-sizing: border-box;
+        height: 100%;
+      }
+
+      /* Navigasi Ronde */
+      .round-nav {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 5%;
+      }
+      .nav-arrow {
+        font-size: 3em;
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+      .nav-arrow:hover {
+        transform: scale(1.2);
+      }
+      #round-title {
+        font-size: 2.5em;
+        text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.4);
+      }
+
+      /* Area Skor */
+      .score-area {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        width: 100%;
+        margin: 15px 0;
+      }
+      .team-score {
+        text-align: center;
+      }
+      .team-score-box,
+      .round-total-box {
+        padding: 10px 30px;
+        margin: 5px 0;
+        border-radius: 15px;
+        border: 4px solid #ffd700;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3),
+          inset 0 0 10px rgba(0, 0, 0, 0.2);
+      }
+      .team-score-box {
+        background-color: #005999;
+      }
+      .score-value {
+        font-size: 3em;
+        color: #ffd700;
+        text-shadow: 2px 2px 0 #a56a00, 2px 2px 5px rgba(0, 0, 0, 0.7);
+      }
+      .round-total-container {
+        text-align: center;
+      }
+      .round-total-box {
+        background-color: #e65100;
+      }
+      .transfer-arrows {
+        display: flex;
+        justify-content: space-between;
+        width: 150px;
+        margin: 0 20px;
+      }
+      .transfer-arrow {
+        font-size: 3em;
+        color: #ffc107;
+        cursor: pointer;
+        transition: transform 0.2s;
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+      }
+      .transfer-arrow:hover {
+        transform: scale(1.2);
+      }
+
+      /* Area Jawaban */
+      .answers-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        width: 80%;
+        margin: 15px 0;
+      }
+      .answer-box {
+        background: linear-gradient(145deg, #ff8c00, #ffae42);
+        border-radius: 15px;
+        border: 4px solid white;
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 25px;
+        font-size: 1.5em;
+        cursor: pointer;
+        transition: transform 0.2s, filter 0.2s;
+        position: relative;
+      }
+      .answer-box .answer-number {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 2em;
+      }
+      .answer-text,
+      .answer-score {
+        visibility: hidden;
+      }
+      .answer-box.revealed .answer-text,
+      .answer-box.revealed .answer-score {
+        visibility: visible;
+      }
+      .answer-box.revealed .answer-number {
+        display: none;
+      }
+      .answer-score {
+        background-color: rgba(255, 215, 0, 0.8);
+        color: #a56a00;
+        padding: 5px 15px;
+        border-radius: 10px;
+        font-weight: bold;
+      }
+
+      /* Indikator Salah */
+      .wrong-indicator-container {
+        position: absolute;
+        top: 20px;
+        right: 40px;
+        display: flex;
+        gap: 15px;
+      }
+      .wrong-x {
+        font-size: 4em;
+        color: red;
+        text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        transform: scale(0.5);
+        transition: opacity 0.3s, transform 0.3s;
+      }
+      .wrong-x.show {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      /* Footer */
+      .footer-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        position: absolute;
+        bottom: 20px;
+        padding: 0 40px;
+      }
+      .question-button {
+        background-color: #4caf50;
+        color: white;
+        padding: 15px 30px;
+        border-radius: 15px;
+        font-size: 1.5em;
+        cursor: pointer;
+        border: 3px solid white;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+      }
+      .wrong-button {
+        background-color: #d32f2f;
+        color: white;
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        font-size: 4em;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        border: 3px solid white;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+      }
+
+      /* Modal Pertanyaan */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
+        justify-content: center;
+        align-items: center;
+      }
+      .modal-content {
+        background-color: #fefefe;
+        color: #333;
+        padding: 40px;
+        border: 10px solid #ffc107;
+        border-radius: 20px;
+        width: 60%;
+        text-align: center;
+        font-size: 2em;
+        position: relative;
+      }
+      .close-button {
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        color: #aaa;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="game-container">
+      <div class="round-nav">
+        <i class="fas fa-chevron-left nav-arrow" id="prev-round"></i>
+        <h1 id="round-title">RONDE 1</h1>
+        <i class="fas fa-chevron-right nav-arrow" id="next-round"></i>
+      </div>
+
+      <div class="score-area">
+        <div class="team-score">
+          <h2>TIM 1</h2>
+          <div class="team-score-box">
+            <span id="team1-score" class="score-value">0</span>
+          </div>
+        </div>
+        <div class="round-total-container">
+          <h2>TOTAL RONDE</h2>
+          <div class="round-total-box">
+            <span id="round-total" class="score-value">0</span>
+          </div>
+          <div class="transfer-arrows">
+            <i
+              class="fas fa-arrow-circle-left transfer-arrow"
+              data-team="1"
+            ></i>
+            <i
+              class="fas fa-arrow-circle-right transfer-arrow"
+              data-team="2"
+            ></i>
+          </div>
+        </div>
+        <div class="team-score">
+          <h2>TIM 2</h2>
+          <div class="team-score-box">
+            <span id="team2-score" class="score-value">0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="wrong-indicator-container">
+        <div class="wrong-x" id="wrong-1">X</div>
+        <div class="wrong-x" id="wrong-2">X</div>
+        <div class="wrong-x" id="wrong-3">X</div>
+      </div>
+
+      <div class="answers-grid" id="answers-grid"></div>
+
+      <div class="footer-controls">
+        <button class="question-button" id="show-question-btn">
+          <i class="fas fa-hand-paper"></i> Lihat Pertanyaan
+        </button>
+        <a
+          href="skor.html"
+          id="end-game-link"
+          style="
+            color: white;
+            font-size: 1.5em;
+            text-decoration: none;
+            background: #6a1b9a;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+          "
+          >Lihat Skor Akhir</a
+        >
+        <div class="wrong-button" id="add-wrong-btn">X</div>
+      </div>
+    </div>
+
+    <div id="question-modal" class="modal">
+      <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <p id="question-text"></p>
+      </div>
+    </div>
+
+    <audio
+      id="wrong-sound"
+      src="https://www.myinstants.com/media/sounds/wrong-answer-sound-effect.mp3"
+      preload="auto"
+    ></audio>
+
+    <script>
+      // Data Kuis untuk 5 Ronde
+      const quizData = [
+        {
+          round: 1,
+          question: "Apa alasan utama seseorang malas belajar?",
+          answers: [
+            { text: "Mengantuk / Lelah", points: 28 },
+            { text: "Main Game / Medsos", points: 25 },
+            { text: "Pelajaran Terlalu Sulit", points: 18 },
+            { text: "Tidak Suka Pelajarannya", points: 15 },
+            { text: "Diajak Teman Main", points: 8 },
+            { text: "Suasana Tidak Nyaman", points: 6 },
+            { text: "Nonton TV / Film", points: 0 },
+            { text: "Tidak Ada Tujuan", points: 0 },
+          ],
+        },
+        {
+          round: 2,
+          question: "Apa yang kamu lakukan agar semangat belajar kembali?",
+          answers: [
+            { text: "Mengingat Cita-cita", points: 30 },
+            { text: "Istirahat Sejenak", points: 24 },
+            { text: "Mendengarkan Musik", points: 20 },
+            { text: "Belajar Bersama Teman", points: 12 },
+            { text: "Mencari Suasana Baru", points: 8 },
+            { text: "Minum Kopi / Teh", points: 6 },
+            { text: "Melihat Orang Sukses", points: 0 },
+            { text: "Olahraga Ringan", points: 0 },
+          ],
+        },
+        {
+          round: 3,
+          question: "Sebutkan benda yang membantumu lebih fokus saat belajar!",
+          answers: [
+            { text: "Buku Catatan & Pulpen", points: 29 },
+            { text: "Headphone / Earphone", points: 25 },
+            { text: "Lampu Belajar", points: 17 },
+            { text: "Meja Belajar yang Rapi", points: 13 },
+            { text: "Kacamata", points: 9 },
+            { text: "Botol Minum", points: 7 },
+            { text: "Cemilan Sehat", points: 0 },
+            { text: "Papan Tulis Kecil", points: 0 },
+          ],
+        },
+        {
+          round: 4,
+          question:
+            "Siapa orang yang paling sering memberimu motivasi belajar?",
+          answers: [
+            { text: "Orang Tua (Ibu/Ayah)", points: 40 },
+            { text: "Guru", points: 25 },
+            { text: "Teman / Sahabat", points: 15 },
+            { text: "Diri Sendiri", points: 10 },
+            { text: "Kakak / Adik", points: 6 },
+            { text: "Tokoh Idola", points: 4 },
+            { text: "Pacar / Gebetan", points: 0 },
+            { text: "Kakek / Nenek", points: 0 },
+          ],
+        },
+        {
+          round: 5,
+          question: "Apa manfaat memiliki target atau tujuan dalam belajar?",
+          answers: [
+            { text: "Jadi Lebih Fokus & Terarah", points: 35 },
+            { text: "Menambah Semangat", points: 28 },
+            { text: "Tahu Prioritas Belajar", points: 16 },
+            { text: "Bisa Mengukur Kemajuan", points: 10 },
+            { text: "Waktu Belajar Efisien", points: 8 },
+            { text: "Membanggakan Orang Tua", points: 3 },
+            { text: "Dapat Hadiah", points: 0 },
+            { text: "Cepat Lulus", points: 0 },
+          ],
+        },
+      ];
+
+      let currentRound = 0;
+      let team1Score = 0;
+      let team2Score = 0;
+      let roundTotal = 0;
+      let wrongAnswers = 0;
+
+      const roundTitleEl = document.getElementById("round-title");
+      const team1ScoreEl = document.getElementById("team1-score");
+      const team2ScoreEl = document.getElementById("team2-score");
+      const roundTotalEl = document.getElementById("round-total");
+      const answersGridEl = document.getElementById("answers-grid");
+      const questionTextEl = document.getElementById("question-text");
+      const modalEl = document.getElementById("question-modal");
+      const wrongSound = document.getElementById("wrong-sound");
+      const endGameLink = document.getElementById("end-game-link");
+
+      function initializeScores() {
+        team1Score = parseInt(localStorage.getItem("team1Score")) || 0;
+        team2Score = parseInt(localStorage.getItem("team2Score")) || 0;
+        team1ScoreEl.textContent = team1Score;
+        team2ScoreEl.textContent = team2Score;
+      }
+
+      function loadRound(roundIndex) {
+        // Reset state ronde sebelumnya
+        roundTotal = 0;
+        wrongAnswers = 0;
+        roundTotalEl.textContent = 0;
+        document
+          .querySelectorAll(".wrong-x")
+          .forEach((x) => x.classList.remove("show"));
+
+        // Muat data ronde baru
+        currentRound = roundIndex;
+        const roundData = quizData[currentRound];
+
+        roundTitleEl.textContent = `RONDE ${roundData.round}`;
+        questionTextEl.textContent = roundData.question;
+        answersGridEl.innerHTML = "";
+
+        roundData.answers.forEach((answer, index) => {
+          const box = document.createElement("div");
+          box.classList.add("answer-box");
+          box.dataset.points = answer.points;
+          box.innerHTML = `
+                    <span class="answer-number">${index + 1}</span>
+                    <span class="answer-text">${answer.text}</span>
+                    <span class="answer-score">${answer.points}</span>
+                `;
+          box.addEventListener(
+            "click",
+            () => {
+              if (!box.classList.contains("revealed")) {
+                box.classList.add("revealed");
+                const points = parseInt(box.dataset.points);
+                roundTotal += points;
+                roundTotalEl.textContent = roundTotal;
+              }
+            },
+            { once: true }
+          );
+          answersGridEl.appendChild(box);
+        });
+
+        // Tampilkan tombol skor akhir jika ini ronde terakhir
+        if (currentRound === quizData.length - 1) {
+          endGameLink.style.display = "block";
+        } else {
+          endGameLink.style.display = "none";
+        }
+      }
+
+      // Event Listeners
+      document.getElementById("prev-round").addEventListener("click", () => {
+        if (currentRound > 0) {
+          loadRound(currentRound - 1);
+        }
+      });
+
+      document.getElementById("next-round").addEventListener("click", () => {
+        if (currentRound < quizData.length - 1) {
+          loadRound(currentRound + 1);
+        }
+      });
+
+      document.getElementById("add-wrong-btn").addEventListener("click", () => {
+        if (wrongAnswers < 3) {
+          wrongAnswers++;
+          document
+            .getElementById(`wrong-${wrongAnswers}`)
+            .classList.add("show");
+          wrongSound.currentTime = 0;
+          wrongSound.play();
+        }
+      });
+
+      document.querySelectorAll(".transfer-arrow").forEach((arrow) => {
+        arrow.addEventListener("click", (e) => {
+          const team = e.target.dataset.team;
+          if (team === "1") {
+            team1Score += roundTotal;
+            team1ScoreEl.textContent = team1Score;
+          } else {
+            team2Score += roundTotal;
+            team2ScoreEl.textContent = team2Score;
+          }
+          localStorage.setItem("team1Score", team1Score);
+          localStorage.setItem("team2Score", team2Score);
+          roundTotal = 0;
+          roundTotalEl.textContent = 0;
+        });
+      });
+
+      // Modal Logic
+      document
+        .getElementById("show-question-btn")
+        .addEventListener("click", () => (modalEl.style.display = "flex"));
+      document
+        .querySelector(".close-button")
+        .addEventListener("click", () => (modalEl.style.display = "none"));
+      window.addEventListener("click", (e) => {
+        if (e.target == modalEl) {
+          modalEl.style.display = "none";
+        }
+      });
+
+      // Inisialisasi Game
+      initializeScores();
+      loadRound(0);
+    </script>
+  </body>
+</html>
