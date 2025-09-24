@@ -3,9 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Family 100</title>
+    <title>Family 100 - Selamat Datang!</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700;900&display=swap');
+
+        :root {
+            --glow-color: #ffae42;
+        }
 
         *, *::before, *::after {
             box-sizing: border-box;
@@ -44,13 +48,37 @@
             background-image: url('https://freeimghost.net/images/2025/06/14/Family-100.jpg');
             background-size: cover;
             background-position: center;
-            animation: kenburnsZoom 30s infinite;
-            filter: brightness(0.9);
+            animation: kenburnsZoom 30s infinite alternate;
+            filter: brightness(0.7) blur(2px);
+            transform: scale(1.1); /* Start slightly zoomed */
         }
         
         @keyframes kenburnsZoom {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.08); }
+            from { transform: scale(1.1); }
+            to { transform: scale(1); }
+        }
+
+        /* --- EFEK PARTIKEL BARU --- */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+        .particle {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            animation: float 25s infinite;
+            opacity: 0;
+        }
+        @keyframes float {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(-100vh) scale(0.5); opacity: 0; }
         }
 
         .game-title {
@@ -61,10 +89,23 @@
             text-transform: uppercase;
             text-shadow: 
                 0 0 5px #fff,
-                0 0 15px #ffae42,
-                0 0 30px #ffae42,
-                0 4px 20px rgba(0,0,0,0.5);
-            margin-bottom: 30px;
+                0 0 10px #fff,
+                0 0 20px var(--glow-color),
+                0 0 40px var(--glow-color),
+                0 0 60px var(--glow-color);
+            margin-bottom: 40px;
+            /* Animasi Masuk */
+            opacity: 0;
+            animation: fadeInDown 1s ease-out 0.5s forwards, pulseGlow 4s infinite;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulseGlow {
+            0%, 100% { text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px var(--glow-color), 0 0 40px var(--glow-color), 0 0 60px var(--glow-color); }
+            50% { text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px var(--glow-color), 0 0 50px var(--glow-color), 0 0 80px var(--glow-color); }
         }
 
         .play-button {
@@ -74,54 +115,97 @@
             color: white;
             text-decoration: none;
             background: linear-gradient(45deg, #ff7e00, #ffb300);
-            border: none;
+            border: 3px solid #ffc857;
             border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4), inset 0 -4px 10px rgba(0,0,0,0.2);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            /* Animasi Masuk */
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 1s forwards;
+        }
+
+        /* Efek kilau pada tombol */
+        .play-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transform: skewX(-30deg);
+            transition: left 0.7s ease;
+        }
+
+        .play-button:hover::before {
+            left: 150%;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .play-button:hover {
             transform: scale(1.05) translateY(-8px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 15px 35px rgba(255, 174, 66, 0.4), inset 0 -4px 10px rgba(0,0,0,0.2);
         }
 
         .play-button:active {
             transform: scale(1.02) translateY(-4px);
         }
-
     </style>
 </head>
 <body>
     <div class="main-container">
         <div class="background-image"></div>
+        <div class="particles" id="particles-container"></div>
         
         <h1 class="game-title">Family 100</h1>
 
         <a href="game.html" class="play-button">PLAY</a>
     </div>
 
-    <audio id="start-sound" src="https://www.myinstants.com/media/sounds/collect-star-sound-effect.mp3" preload="auto"></audio>
+    <audio id="start-sound" src="https://www.myinstants.com/media/sounds/swoosh-sound-effect.mp3" preload="auto"></audio>
 
     <script>
+        // Logika untuk tombol Play (sudah bagus, tidak perlu diubah)
         const playButton = document.querySelector('.play-button');
         const startSound = document.getElementById('start-sound');
 
         playButton.addEventListener('click', function(event) {
-            // Mencegah link langsung pindah halaman
             event.preventDefault(); 
-            
             const destination = this.href;
-
-            // Memutar suara
             startSound.currentTime = 0;
             startSound.play();
-
-            // Beri jeda 500 milidetik (0.5 detik) sebelum pindah halaman
             setTimeout(function() {
                 window.location.href = destination;
             }, 500); 
         });
-    </script>
 
+        // Logika untuk membuat partikel secara dinamis
+        const particlesContainer = document.getElementById('particles-container');
+        const particleCount = 20; // Jumlah partikel
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            
+            const size = Math.random() * 15 + 5; // Ukuran partikel
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            
+            particle.style.left = `${Math.random() * 100}%`; // Posisi horizontal acak
+            
+            const delay = Math.random() * 25; // Delay animasi acak
+            const duration = Math.random() * 15 + 10; // Durasi animasi acak
+            particle.style.animationDelay = `${delay}s`;
+            particle.style.animationDuration = `${duration}s`;
+
+            particlesContainer.appendChild(particle);
+        }
+    </script>
 </body>
 </html>
