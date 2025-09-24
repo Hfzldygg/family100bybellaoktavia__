@@ -3,166 +3,218 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Skor Akhir - Family 100 Islami</title>
+    <title>Skor Akhir - Family 100</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Paytone+One&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+        :root {
+            --bg-dark: #0f0c29;
+            --bg-medium: #302b63;
+            --bg-light: #24243e;
+            --accent-color: #00e5ff;
+            --text-color: #ffffff;
+            --gold-color: #ffd700;
+        }
 
         body, html {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100vh;
-            font-family: 'Paytone One', sans-serif;
-            background: radial-gradient(ellipse at center, #023a78, #001f3f);
-            color: white;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(45deg, var(--bg-dark), var(--bg-medium), var(--bg-light));
+            background-size: 200% 200%;
+            animation: gradientBG 15s ease infinite;
+            color: var(--text-color);
             overflow: hidden;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            text-align: center;
         }
 
-        .logo-container {
-            background-color: #0056b3;
-            border: 8px solid #ffd700;
-            border-radius: 50% / 80%;
-            padding: 20px 60px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.2);
-            margin-bottom: 30px;
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
-        .logo-text {
-            font-size: 5em;
-            color: white;
-            text-shadow: 
-                0 0 5px #fff, 
-                0 0 10px #fff, 
-                0 0 20px #ffc107, 
-                0 0 30px #ffc107, 
-                -5px 5px 5px rgba(0,0,0,0.5);
+        .main-title {
+            font-size: 4em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--accent-color);
         }
 
         .final-title {
-            font-size: 4.5em;
-            color: #ff8c00;
-            text-shadow: 0 0 10px #ffc107, 0 0 20px #ff8c00, 4px 4px 8px rgba(0,0,0,0.5);
-            margin-bottom: 30px;
+            font-size: 2.5em;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 40px;
         }
 
         .scores-wrapper {
             position: relative;
-            padding: 30px;
+            padding: 40px;
             display: flex;
             justify-content: space-around;
             align-items: center;
-            width: 70%;
+            width: 75%;
+            max-width: 1000px;
             background: rgba(0, 0, 0, 0.2);
+            border: 2px solid var(--accent-color);
             border-radius: 20px;
-        }
-        
-        .marquee-lights {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            border-radius: 20px;
-            border: 5px solid #ffd700;
-            pointer-events: none;
-        }
-        
-        .marquee-lights::before {
-            content: '';
-            position: absolute;
-            top: -10px; left: -10px; right: -10px; bottom: -10px;
-            border-radius: 30px;
-            background: 
-                repeating-linear-gradient(45deg, #ffd700, #ffd700 10px, transparent 10px, transparent 20px),
-                repeating-linear-gradient(-45deg, #ffd700, #ffd700 10px, transparent 10px, transparent 20px);
-            animation: marquee 0.5s linear infinite;
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.5);
+            animation: pulse-glow 4s linear infinite;
         }
 
-        @keyframes marquee {
-            from { background-position: 0 0; }
-            to { background-position: 40px 0; }
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 20px rgba(0, 229, 255, 0.5); border-color: var(--accent-color); }
+            50% { box-shadow: 0 0 35px rgba(255, 215, 0, 0.6); border-color: var(--gold-color); }
+            100% { box-shadow: 0 0 20px rgba(0, 229, 255, 0.5); border-color: var(--accent-color); }
         }
-
 
         .final-score-box {
             text-align: center;
             padding: 20px 50px;
+            transition: transform 0.3s ease;
+        }
+        
+        .final-score-box.winner {
+            transform: scale(1.1);
         }
 
         .final-score-box h2 {
-            font-size: 3em;
+            font-size: 2.5em;
             margin-bottom: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .winner-icon {
+            color: var(--gold-color);
+            font-size: 1.2em;
+            text-shadow: 0 0 15px var(--gold-color);
+            display: none; /* Disembunyikan secara default */
+        }
+
+        .winner .winner-icon {
+            display: inline-block; /* Tampilkan hanya untuk pemenang */
         }
 
         .final-score-value {
-            font-size: 8em;
-            color: #ffd700;
+            font-size: 7em;
+            font-weight: 700;
+            color: var(--accent-color);
             line-height: 1;
-            text-shadow: 
-                -3px -3px 0 #a56a00, 
-                3px -3px 0 #a56a00,
-                -3px 3px 0 #a56a00,
-                3px 3px 0 #a56a00,
-                6px 6px 10px rgba(0,0,0,0.6);
+            text-shadow: 0 0 15px var(--accent-color);
         }
-        
+
+        .winner .final-score-value {
+            color: var(--gold-color);
+            text-shadow: 0 0 20px var(--gold-color);
+        }
+
         .bottom-controls {
             position: absolute;
             bottom: 30px;
-            left: 30px;
             display: flex;
             gap: 20px;
         }
 
-        .icon-button {
-            font-size: 3em;
+        .control-btn {
+            background: linear-gradient(45deg, var(--bg-medium), var(--bg-light));
+            color: var(--text-color);
+            padding: 12px 25px;
+            border-radius: 15px;
+            font-size: 1.2em;
+            font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s, color 0.2s;
-            color: #ffc107;
+            border: 2px solid var(--accent-color);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        .icon-button:hover {
-            transform: scale(1.2);
-            color: #fff;
+
+        .control-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 229, 255, 0.4);
+            border-color: var(--gold-color);
         }
 
     </style>
 </head>
 <body>
 
-    <div class="logo-container">
-        <span class="logo-text">FAMILY 100</span>
-    </div>
-
-    <h1 class="final-title">NILAI AKHIR</h1>
+    <h1 class="main-title">FAMILY 100</h1>
+    <h2 class="final-title">NILAI AKHIR</h2>
 
     <div class="scores-wrapper">
-        <div class="marquee-lights"></div>
-        <div class="final-score-box">
-            <h2>TIM 1</h2>
+        <div class="final-score-box" id="box-team1">
+            <h2>
+                <span>TIM 1</span>
+                <i class="fas fa-trophy winner-icon"></i>
+            </h2>
             <div id="final-team1-score" class="final-score-value">0</div>
         </div>
-        <div class="final-score-box">
-            <h2>TIM 2</h2>
+        <div class="final-score-box" id="box-team2">
+            <h2>
+                <span>TIM 2</span>
+                <i class="fas fa-trophy winner-icon"></i>
+            </h2>
             <div id="final-team2-score" class="final-score-value">0</div>
         </div>
     </div>
     
     <div class="bottom-controls">
-        <i class="fas fa-hand-sparkles icon-button" id="applause-btn" title="Tepuk Tangan"></i>
-        <a href="index.html" id="reset-btn" class="icon-button" title="Reset Game"><i class="fas fa-undo"></i></a>
+        <button class="control-btn" id="applause-btn">
+            <i class="fas fa-hand-sparkles"></i>
+            <span>Tepuk Tangan</span>
+        </button>
+        <a href="game.html" id="reset-btn" class="control-btn">
+            <i class="fas fa-undo"></i>
+            <span>Mulai Lagi</span>
+        </a>
     </div>
 
     <audio id="applause-sound" src="https://www.myinstants.com/media/sounds/applause-sound-effect.mp3" preload="auto"></audio>
+    <audio id="winner-sound" src="https://www.myinstants.com/media/sounds/final-fantasy-vii-victory-fanfare-original.mp3" preload="auto"></audio>
+
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const team1Score = localStorage.getItem('team1Score') || 0;
-            const team2Score = localStorage.getItem('team2Score') || 0;
+            const team1ScoreEl = document.getElementById('final-team1-score');
+            const team2ScoreEl = document.getElementById('final-team2-score');
+            const boxTeam1 = document.getElementById('box-team1');
+            const boxTeam2 = document.getElementById('box-team2');
+            
+            const team1Score = parseInt(localStorage.getItem('team1Score')) || 0;
+            const team2Score = parseInt(localStorage.getItem('team2Score')) || 0;
 
-            document.getElementById('final-team1-score').textContent = team1Score;
-            document.getElementById('final-team2-score').textContent = team2Score;
+            team1ScoreEl.textContent = team1Score;
+            team2ScoreEl.textContent = team2Score;
+            
+            const winnerSound = document.getElementById('winner-sound');
+
+            // Tentukan pemenang
+            if (team1Score > team2Score) {
+                boxTeam1.classList.add('winner');
+                winnerSound.play();
+            } else if (team2Score > team1Score) {
+                boxTeam2.classList.add('winner');
+                winnerSound.play();
+            } else {
+                // Jika seri, beri sedikit highlight pada keduanya
+                boxTeam1.style.transform = 'scale(1.05)';
+                boxTeam2.style.transform = 'scale(1.05)';
+            }
             
             // Suara tepuk tangan
             const applauseBtn = document.getElementById('applause-btn');
@@ -172,11 +224,15 @@
                 applauseSound.play();
             });
 
-            // Reset game
+            // Tombol Mulai Lagi (Reset)
             const resetBtn = document.getElementById('reset-btn');
-            resetBtn.addEventListener('click', () => {
-                localStorage.removeItem('team1Score');
-                localStorage.removeItem('team2Score');
+            resetBtn.addEventListener('click', (e) => {
+                if (confirm('Apakah Anda yakin ingin memulai permainan baru? Skor saat ini akan dihapus.')) {
+                    localStorage.removeItem('team1Score');
+                    localStorage.removeItem('team2Score');
+                } else {
+                    e.preventDefault(); // Batalkan navigasi jika pengguna menekan 'Cancel'
+                }
             });
         });
     </script>
